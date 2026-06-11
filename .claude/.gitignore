@@ -1,0 +1,3 @@
+# Runtime artifacts produced by the hooks — never commit these.
+.session/
+logs/

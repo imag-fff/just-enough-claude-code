@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Hooks must keep working on the oldest supported runtime.
+        node-version: [18, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Unit and manifest tests
+        run: npm test
+
+  installer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Lint installer
+        run: shellcheck install.sh
+      - name: Smoke install into a scratch project
+        run: |
+          target="$(mktemp -d)"
+          ./install.sh "$target" --dry-run
+          ./install.sh "$target"
+          # Re-run must be a no-op (idempotency).
+          rerun_output="$(./install.sh "$target")"
+          grep -q "skip (exists)" <<< "$rerun_output"
+          # The merged settings must parse and reference existing scripts.
+          node -e "
+            const fs = require('fs');
+            const s = JSON.parse(fs.readFileSync(process.argv[1] + '/.claude/settings.json', 'utf8'));
+            const cmds = Object.values(s.hooks).flatMap(g => g.flatMap(x => x.hooks.map(h => h.command)));
+            if (cmds.length !== 4) throw new Error('expected 4 hook commands, got ' + cmds.length);
+          " "$target"
+          test -f "$target/CLAUDE.md"

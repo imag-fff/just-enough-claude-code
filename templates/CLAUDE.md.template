@@ -1,0 +1,30 @@
+# CLAUDE.md
+
+<!-- Project memory for Claude Code. Keep it short: every line here is loaded
+     into context on every session. Link out to docs for details. -->
+
+## Project overview
+
+TODO: One or two sentences — what this project is and who uses it.
+
+## Commands
+
+<!-- The commands an agent needs constantly. Verify each one actually works. -->
+
+- Build: `TODO`
+- Test (all): `TODO`
+- Test (single file): `TODO`
+- Lint / format: `TODO`
+
+## Conventions
+
+- TODO: language/framework versions, directory layout rules
+- TODO: error-handling and logging conventions
+- TODO: test conventions (where tests live, naming)
+
+## Warnings
+
+<!-- Things an agent WILL get wrong without being told. -->
+
+- TODO: e.g. "Never edit generated files under src/gen/"
+- TODO: e.g. "Migrations require X before Y"
